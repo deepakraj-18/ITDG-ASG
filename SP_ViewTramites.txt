@@ -1,0 +1,315 @@
+-- =============================================                      
+-- Author:                          
+-- Create date:                       
+-- Description:                        
+-- =============================================                      
+CREATE    PROCEDURE [dbo].[SP_ViewTramites]                      
+ -- Add the parameters for the stored procedure here                        
+  @numCaso        VARCHAR(20),                           
+  @businessID     INT,                        
+  @statusID       INT,                   
+  @moduleID       VARCHAR(3),          
+  @hasAmendments  VARCHAR(3)          
+                     
+AS                        
+  BEGIN                        
+      -- SET NOCOUNT ON added to prevent extra result sets from                        
+      -- interfering with SELECT statements.                        
+      SET nocount ON;                        
+      SET FMTONLY OFF;                
+                
+  CREATE TABLE #tmpTramite (                      
+ [TramiteID] [int]  ,                      
+ [GUID] [uniqueidentifier] NOT NULL,                      
+ [BusinessID] [int] NULL,                      
+ [TipoTramiteID] [int] NOT NULL,                      
+ [StatusID] [int] NOT NULL,                      
+ [CurrentUserID] [int] NOT NULL,                      
+ [ExecutionID] [int] NULL,                      
+ [T_NumCasoTemp] [varchar](20) NOT NULL,                      
+ [T_NumCaso] [varchar](20) NULL,                      
+ [T_Costo] [decimal](18, 2) NULL,                      
+ [T_UpdatedCosto] [decimal](18, 2) NULL,                      
+ [T_CostoDifference] [decimal](18, 2) NULL,                      
+ [T_CreationDate] [datetime] NOT NULL,                      
+ [T_RadicationDate] [datetime] NULL,                      
+ [T_TipoPrivGov] [varchar](50) NOT NULL,                      
+ [Catastro] [nvarchar](50) NULL,                      
+ [RolID_FK] [int] NOT NULL,                      
+ [AssignedUserId_FK] [int] NULL,                      
+ [LastInvoiceId_FK] [int] NULL,                      
+ [LastNotes] [varchar](max) NULL,                      
+ [LastModifiedDate] [datetime] NULL,                      
+ [ExpiredFlag] [bit] NULL,                      
+ [AlertId_FK] [int] NULL,                      
+ [IDCatastro] [int] NULL,                      
+ [CertificateIssueDate] [datetime] NULL,                      
+ [CertificateExpiredDate] [datetime] NULL,                      
+ [RenewalDate] [datetime] NULL,                      
+ [DisplayCertMsg] [bit] NOT NULL,                      
+ [RBR_SOCIAL_SECURITY] [nvarchar](255) NULL,                      
+ [RBR_FIRST_NAME] [nvarchar](255) NULL,                      
+ [RBR_LAST_NAME_P] [nvarchar](255) NULL,                      
+ [RBR_LAST_NAME_M] [nvarchar](255) NULL,                      
+ [RBR_COMPANY_NAME] [nvarchar](255) NULL,                      
+ [RBR_ACTIVITY] [nvarchar](255) NULL,                      
+ [RBR_PHONE1] [nvarchar](255) NULL,                      
+ [RBR_PHONE2] [nvarchar](255) NULL,                      
+ [RBR_EMAIL_ADDRESS] [nvarchar](255) NULL,                      
+ [PolizaFondo] [nvarchar](50) NULL,                      
+ [DeptEstado] [nvarchar](50) NULL,                      
+ [SeguroChoferil] [nvarchar](50) NULL,                      
+ [BajoInv] [bit] NULL,                      
+ [BajoInv_Desc] [varchar](max) NULL,                      
+ [CertElegibilidad] [nvarchar](50) NULL,                      
+ [SuspensionDate] [datetime] NULL,                      
+ [TramiteCategoryID] [int] NULL,                      
+ [ApproveDate] [datetime] NULL,                      
+ [AssignDate] [datetime] NOT NULL,                      
+ [ServiceCatergoryID] [int] NULL,                      
+ [OtherServiceCategory] [varchar](200) NULL,                      
+ [License_Number] [varchar](50) NULL,                      
+ [DateOfBirth] [datetime] NULL,                      
+ [PaymentType] [varchar](30) NULL,                      
+ [TramiteTypeChanged] [bit] NULL,                      
+ [MeetsRequirements] [bit] NULL,                      
+ [IsPaidOff] [bit] NULL,                      
+ [MigOldTramiteID] [int] NULL,                      
+ [MigOldBuinessID] [int] NULL,                      
+ [MigTipoTramite] [varchar](10) NULL,                      
+ [MigOldProponenteID] [int] NULL,                      
+ [ApprovedBy] [int] NULL,                      
+ [AnalisisFinancieroDate] [datetime] NULL,                      
+ [AnalisisFinancieroUser] [int] NULL,                      
+ [RevisionOficialDate] [datetime] NULL,                      
+ [RevisionOficialUser] [int] NULL,                      
+ [EligibilityCertificationTemplate] [varchar](250) NULL,                      
+ [Report_BusinessGUID] [uniqueidentifier] NULL,                      
+ [Report_ExpeditionDay] [int] NULL,                      
+ [Report_ExpeditionMonth] [int] NULL,                      
+ [Report_ExpeditionYear] [int] NULL,                      
+ [Report_CertificationNumber] [varchar](50) NULL,                      
+ [Report_ExpirationDay] [int] NULL,                      
+ [Report_ExpirationMonth] [int] NULL,                      
+ [Report_ExpirationYear] [int] NULL,                      
+[Report_BidderName] [varchar](max) NULL,                      
+ [Report_BidderNumber] [int] NULL,                      
+ [Report_BidderAddress] [varchar](max) NULL,                      
+ [Report_BidderPhone] [varchar](30) NULL,                      
+ [Report_BidderEmail] [varchar](255) NULL,                      
+ [Report_BidderSSN] [varchar](255) NULL,                      
+ [Report_Fax] [varchar](30) NULL,                      
+ [Report_ExpirationDate] [varchar](255) NULL,                      
+ [Report_ExpeditionDate] [varchar](255) NULL,                      
+ [Report_MembersJSON] [varchar](max) NULL,                      
+ [isDeleted] [bit] NULL,                      
+ [CreatedBy] [int] NOT NULL,                      
+ [UpdatedBy] [int] NOT NULL,                      
+ [RenewParentid] [int] NULL,                      
+ [OfferObject] [varchar](max) NULL,                      
+ [IsRenew] [bit] NOT NULL,                      
+ [PaymentInstructions] [varchar](max) NULL,                      
+ [LastExpiredNotificationDate] [datetime] NULL,                      
+ [LastChangedStatusDate] [datetime] NULL,                      
+ [ExpirationDate] [datetime] NULL,                      
+ [ActionUserID] [int] NULL,                      
+ [CouponNumber] [varchar](100) NULL,                      
+ [IDEAL_AcceptTermsAndConditions] [bit] NULL,                      
+ [IDEAL_AuthorizedRepresentative] [varchar](100) NULL,                      
+ [IDEAL_StateDeptRegisterNumber] [varchar](100) NULL,                      
+ [IDEAL_BusinessClass] [varchar](100) NULL,                      
+ [IDEAL_BusinessType] [varchar](100) NULL,                      
+ [IDEAL_Jurisdiction] [varchar](100) NULL,                      
+ [IDEAL_SearchReason] [varchar](100) NULL,                      
+ [IDEAL_AuthorizationDate] [varchar](100) NULL,                      
+ [SAMUniqueID] [varchar](30) NULL,                      
+ [SAM_Active] [bit] NULL,                      
+ [IDEAL_Hide_DisclaimerModal] [bit] NULL,                      
+ [IDEAL_DisclaimerModal_ViewedDate] [datetime] NULL)                      
+                      
+ CREATE NONCLUSTERED INDEX Index_Tramite ON #tmpTramite([TramiteID])                      
+                      
+                     
+IF @statusID=1011                      
+  BEGIN                      
+                     
+  INSERT INTO #tmpTramite                      
+                   
+ SELECT DISTINCT T.*  FROM [dbo].[Tramite] T                      
+  JOIN  [dbo].[TramiteAmendment] A ON T.TramiteID=A.TramiteID                 
+  JOIN [dbo].[TipoTramite] TT on TT.TipoTramiteID = T.TipoTramiteID        
+ WHERE A.AmendmentReasonID<>9 AND A.AmendmentReasonID<>0 AND TT.ModuleID = @moduleID           
+   
+                  
+                  
+  END                      
+  ELSE                      
+   BEGIN        
+         
+      
+  IF @HasAmendments='Yes'    
+BEGIN    
+ INSERT INTO #tmpTramite          
+       
+ SELECT DISTINCT T.*    
+ FROM [dbo].[Tramite] T          
+   JOIN  [dbo].[TramiteAmendment] A ON T.TramiteID=A.TramiteID          
+  JOIN [dbo].[TipoTramite] TT on TT.TipoTramiteID = T.TipoTramiteID        
+ WHERE A.IsActive=1 AND (@statusID IS NULL OR T.[statusid] = @statusID)    AND TT.ModuleID = @moduleID  
+ END     
+ELSE IF @HasAmendments='No'    
+BEGIN    
+ INSERT INTO #tmpTramite          
+       
+ SELECT DISTINCT T.*   FROM [dbo].[Tramite] T          
+  LEFT JOIN  [dbo].[TramiteAmendment] A ON T.TramiteID=A.TramiteID     AND A.IsActive=0       
+  JOIN [dbo].[TipoTramite] TT on TT.TipoTramiteID = T.TipoTramiteID        
+ WHERE  (@statusID IS NULL OR T.[statusid] = @statusID)   AND TT.ModuleID = @moduleID  
+END    
+    
+ELSE    
+BEGIN    
+ INSERT INTO #tmpTramite          
+   --Original By santosh    
+ --SELECT T.* FROM [dbo].[Tramite] T          
+ -- LEFT JOIN  [dbo].[TramiteAmendment] A ON T.TramiteID=A.TramiteID          
+ --WHERE T.[statusid] = @statusID  AND A.AmendmentReasonID<>9 AND A.AmendmentReasonID<>0  AND (A.IsActive=0 OR A.IsActive=1)     
+    
+    
+ SELECT DISTINCT T.*     
+ FROM [dbo].[Tramite] T      
+ --Wmena Create Inner table groupb by to avoid Unnecesary Filter And  duplicates    
+ LEFT JOIN (    
+  SELECT  A.TramiteID FROM [dbo].[TramiteAmendment] A    
+  WHERE A.AmendmentReasonID<>9 AND A.AmendmentReasonID<>0  AND (A.IsActive=0 OR A.IsActive=1)     
+  GROUP BY  A.TramiteID ) as A on A.TramiteID = T.TramiteID    
+  WHERE (@statusID IS NULL OR T.[statusid] = @statusID )    
+    
+    
+END    
+           
+  END                          
+                  
+                      
+ SELECT    T.[tramiteid],                      
+                    T.guid,                      
+                    TT.moduleid,                      
+                    TT.tp_description,                      
+                    RB.[businessid],                      
+     RB.RBR_EMAIL_ADDRESS,                      
+                   ISNULL(RB.[rbr_company_name]  , ISNULL(RB.RBR_FIRST_NAME,' ') + ' ' + ISNULL(RB.RBR_LAST_NAME_P,' '))              AS                      
+                   'BusinessName',                      
+                    TT.[tipotramiteid]                             AS                      
+                    'BusinessTypeID'                      
+                    ,                      
+                    TT.[tp_name]                                   AS                      
+                    'BusinessTypeName',                      
+                    RB.[rbr_social_security]                       AS                      
+                    'SocialSecurity'                      
+                    ,                      
+                    'XXX-XX-'                      
+                    + RIGHT(RB.[rbr_social_security], 4)           AS                      
+                    'SSNLastFour',                      
+                    '#1234567'                                     AS                      
+                    'AuthorizationNumber',                      
+                    T.[t_numcaso]                                  AS                      
+                    'CertificationNumber',                      
+                    U.[firstname] + ' ' + U.[lastname]             AS 'UserName'                      
+                                          
+                     ,CAST(RB.Licitador_ID as int)                      
+               --T.[businessid]                      
+                    AS 'Licitador',                      
+                    UAssigned.[firstname] + ' '                      
+                    + UAssigned.[lastname]                         AS                      
+        'UserAssigned',                      
+                    T.[assigneduserid_fk]                          AS                      
+       'UserAssignedID'                      
+                    ,                      
+                    T.[bajoinv],                      
+                    S.[statusid],                      
+                   S.[s_name]                                     AS                      
+                    'StatusName'                      
+                    ,                      
+     S.[S_NameENG]                                     AS                          'StatusNameENG'                      
+                    ,                      
+                    S.[s_description]                      
+                    AS                      
+                    'StatusDescription',                      
+       S.[S_DescriptionENG]                      
+                    AS                      
+                    'StatusDescriptionENG',                      
+                    T.[rolid_fk]                                   AS 'RolID',                      
+                    R.[rolename]  'RoleName',                      
+                    S.[s_color]                                    AS                      
+                    'StatusColor',                      
+     S.S_BackgroundColor,                      
+     S.S_Description,                      
+                    RB.conceptoid,                      
+                    RB.conceptoname,                      
+                    RB.renglonid,                      
+                    RB.renglonname,                      
+     RB.MunicipalityID [City],                      
+     RB.MunicipalityName,                      
+                    Format(T.[certificateissuedate], 'MM-dd-yyyy') AS                      
+                    CertificateIssueDate                      
+     ,CASE T.[statusid]                      
+     WHEN  2 THEN Format(T.[T_RadicationDate], 'MM-dd-yyyy')  --Sometido                      
+     WHEN  1005 THEN Format(ISNULL(ISNULL(T.LastModifiedDate, T.[T_RadicationDate]),T.[LastChangedStatusDate]), 'MM-dd-yyyy')                       
+     WHEN  1006 THEN Format(ISNULL(ISNULL(T.RevisionOficialDate, T.LastModifiedDate),T.[LastChangedStatusDate]), 'MM-dd-yyyy')                       
+     WHEN  1007 THEN Format(ISNULL(ISNULL(T.AnalisisFinancieroDate, T.[T_RadicationDate]),T.[LastChangedStatusDate]), 'MM-dd-yyyy')                       
+     WHEN  5 THEN Format(ISNULL(ISNULL(T.LastModifiedDate, T.[T_RadicationDate]),T.[LastChangedStatusDate]), 'MM-dd-yyyy')                       
+    WHEN  8 THEN Format(ISNULL(ISNULL(T.LastModifiedDate, T.[T_RadicationDate]),T.[LastChangedStatusDate]), 'MM-dd-yyyy')                       
+     ELSE                      
+     Format(  T.[LastChangedStatusDate], 'MM-dd-yyyy')                       
+                      
+     END as 'StatusDate'    ,                 
+                  
+T.TramiteID AS AmdTramiteID  
+  
+                           
+      FROM  #tmpTramite T    
+  
+--left join (          
+--    select Distinct TramiteID      
+--    from TramiteAmendment  where IsActive=1          
+--  ) A on A.TramiteID = T.TramiteID     
+INNER JOIN [dbo].[TramiteStatus] S on T.StatusID=S.StatusID    
+INNER JOIN [dbo].[TipoTramite] TT                      
+                     ON TT.[TipoTramiteID] = T.[TipoTramiteID]    
+ INNER JOIN [dbo].[business] RB                      
+                     ON RB.[businessid] = T.[businessid]    
+INNER JOIN [dbo].[users] U                      
+                     ON RB.[usr_id] = U.[userid]    
+LEFT JOIN [dbo].[users] UAssigned                      
+                    ON UAssigned.[userid] = T.[assigneduserid_fk]                      
+             LEFT JOIN [dbo].[roles] R                      
+                    ON T.[rolid_fk] = R.[roleid]    
+     
+WHERE  ( @moduleID IS NULL                      
+               OR TT.moduleid = @moduleID )              
+              
+           AND ( @statusID IS NULL OR @statusID=1011                      
+               OR T.[statusid] = @statusID )                    
+              
+ AND ( @businessID IS NULL                      
+               OR RB.Licitador_ID = CONVERT(varchar(20), @businessID) )                
+                  
+  AND ( @numCaso IS NULL                      
+           OR T.[t_numcaso] LIKE @numCaso )     
+             
+                
+                                  
+  ORDER BY  CASE T.[statusid]                        
+     WHEN  2 THEN T.[T_RadicationDate] --Sometido                        
+     WHEN  1005 THEN ISNULL(ISNULL(T.LastModifiedDate, T.[T_RadicationDate]),T.[LastChangedStatusDate])                        
+     WHEN  1006 THEN ISNULL(ISNULL(T.RevisionOficialDate, T.LastModifiedDate),T.[LastChangedStatusDate])                        
+     WHEN  1007 THEN ISNULL(ISNULL(T.AnalisisFinancieroDate, T.[T_RadicationDate]),T.[LastChangedStatusDate])                         
+     WHEN  5 THEN ISNULL(ISNULL(T.LastModifiedDate, T.[T_RadicationDate]),T.[LastChangedStatusDate])                        
+     WHEN  8 THEN ISNULL(ISNULL(T.LastModifiedDate, T.[T_RadicationDate]),T.[LastChangedStatusDate])                        
+     ELSE                        
+       T.[LastChangedStatusDate]                        
+     END  ASC                        
+                      
+  DROP TABLE #tmpTramite                      
+                      
+  END
